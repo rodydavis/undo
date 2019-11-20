@@ -1,5 +1,6 @@
-# Undo.dart
-An undo redo library for Dart.
+# undo
+
+An undo redo library for Dart/Flutter. Forked from [here](https://github.com/Mixbook/undo.dart) and updated for Flutter.
 
 ## Usage
 

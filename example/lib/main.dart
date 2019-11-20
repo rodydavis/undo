@@ -66,11 +66,10 @@ class _HomeScreenState extends State<HomeScreen> {
         onPressed: () {
           if (mounted)
             setState(() {
-              var increase = new Change.inline(
+              changes.add(Change.inline(
                 () => count++,
                 () => count--,
-              );
-              changes.add(increase);
+              ));
               changes.commit();
             });
         },
