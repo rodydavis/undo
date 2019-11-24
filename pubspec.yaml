@@ -1,6 +1,6 @@
 name: undo
 description: A Undo/Redo Library for Flutter
-version: 1.0.0+1
+version: 1.0.1+3
 authors:
   - Rody Davis <rody.davis.jr@gmail.com>
   - Dan Shultz <schultz.t.dan@gmail.com>
