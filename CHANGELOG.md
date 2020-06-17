@@ -1,3 +1,7 @@
+## 1.1.0
+
+- Adding StreamController and ValueNotifier Implementations
+
 ## 1.0.1
 
 * Adding Stream API
