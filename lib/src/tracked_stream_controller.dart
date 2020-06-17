@@ -3,24 +3,36 @@ import 'dart:async';
 import '../undo.dart';
 
 class TrackedStreamController<T> implements StreamSink<T> {
-  TrackedStreamController(
-    this._value, {
-    int maxUndoStack,
-    this.debounce,
-  }) {
-    _controller = StreamController<T>();
+  TrackedStreamController(this._value,
+      {int maxUndoStack,
+      this.debounce,
+      void Function() onListen,
+      void Function() onPause,
+      void Function() onResume,
+      FutureOr<void> Function() onCancel,
+      bool sync = false}) {
+    _controller = StreamController<T>(
+      onListen: onListen,
+      onPause: onPause,
+      onResume: onResume,
+      onCancel: onCancel,
+      sync: sync,
+    );
     _changeStack = ChangeStack(max: maxUndoStack);
     debounce ??= Duration.zero;
     _controller.add(_value);
   }
-  StreamController<T> _controller;
-  ChangeStack _changeStack;
 
   /// Debounce delay to commit changes to a group
   Duration debounce;
 
+  ChangeStack _changeStack;
+  StreamController<T> _controller;
   Timer _debounce;
   T _value;
+
+  @override
+  Future get done => _controller.done;
 
   @override
   void add(T event) {
@@ -52,9 +64,6 @@ class TrackedStreamController<T> implements StreamSink<T> {
 
   @override
   Future close() => _controller.close();
-
-  @override
-  Future get done => _controller.done;
 
   /// Undo the last change
   void undo() => _changeStack.undo();
