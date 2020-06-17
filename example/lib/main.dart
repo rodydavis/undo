@@ -22,13 +22,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final _controller = TrackedStreamController<int>();
-
-  @override
-  void initState() {
-    _controller.add(0);
-    super.initState();
-  }
+  final _controller = TrackedStreamController<int>(0);
 
   @override
   Widget build(BuildContext context) {

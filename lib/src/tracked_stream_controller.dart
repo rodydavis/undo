@@ -3,13 +3,15 @@ import 'dart:async';
 import '../undo.dart';
 
 class TrackedStreamController<T> implements StreamSink<T> {
-  TrackedStreamController({
+  TrackedStreamController(
+    this._value, {
     int maxUndoStack,
     this.debounce,
   }) {
     _controller = StreamController<T>();
     _changeStack = ChangeStack(max: maxUndoStack);
     debounce ??= Duration.zero;
+    _controller.add(_value);
   }
   StreamController<T> _controller;
   ChangeStack _changeStack;
@@ -18,19 +20,19 @@ class TrackedStreamController<T> implements StreamSink<T> {
   Duration debounce;
 
   Timer _debounce;
-  T _lastEvent;
+  T _value;
 
   @override
   void add(T event) {
     if (_debounce == null || !_debounce.isActive) {
       _changeStack.group();
     }
-    _changeStack.add(Change.property(_lastEvent, () {
+    _changeStack.add(Change.property(_value, () {
       _controller.add(event);
     }, (oldValue) {
       _controller.add(oldValue);
     }));
-    _lastEvent = event;
+    _value = event;
     _debounce?.cancel();
     _debounce = Timer(debounce, () => _changeStack.commit());
   }
