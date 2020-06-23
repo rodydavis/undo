@@ -11,6 +11,8 @@ class TrackedValueNotifier<T> extends ChangeNotifier
     this._value, {
     int maxUndoStack,
     this.debounce,
+    this.onRedo,
+    this.onUndo,
   }) {
     _changeStack = ChangeStack(max: maxUndoStack);
     debounce ??= Duration.zero;
@@ -22,6 +24,8 @@ class TrackedValueNotifier<T> extends ChangeNotifier
   ChangeStack _changeStack;
   Timer _debounce;
   T _value;
+
+  final ValueChanged<T> onUndo, onRedo;
 
   /// The current value stored in this notifier.
   ///
@@ -62,10 +66,20 @@ class TrackedValueNotifier<T> extends ChangeNotifier
   }
 
   /// Undo the last change
-  void undo() => _changeStack.undo();
+  void undo() {
+    _changeStack.undo();
+    if (onUndo != null) {
+      onUndo(_value);
+    }
+  }
 
   // Redo the previous change
-  void redo() => _changeStack.redo();
+  void redo() {
+    _changeStack.redo();
+    if (onRedo != null) {
+      onRedo(_value);
+    }
+  }
 
   // Checks whether the undo/redo stack is empty
   bool get canUndo => _changeStack.canUndo;

@@ -22,7 +22,11 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final _controller = TrackedStreamController<int>(0);
+  final _controller = TrackedStreamController<int>(
+    0,
+    onRedo: (val) => print('Redo -> $val'),
+    onUndo: (val) => print('Undo -> $val'),
+  );
 
   @override
   Widget build(BuildContext context) {

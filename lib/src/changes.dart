@@ -55,12 +55,12 @@ abstract class ChangeGroupBase {
   void undo();
 }
 
-class _PropertyChange extends Change {
-  Object _oldValue;
+class _PropertyChange<T> extends Change {
+  T _oldValue;
   Function _execute;
   Function _undo;
 
-  _PropertyChange(this._oldValue, this._execute(), this._undo(Object oldValue));
+  _PropertyChange(this._oldValue, this._execute(), this._undo(T oldValue));
 
   void execute() {
     _execute();

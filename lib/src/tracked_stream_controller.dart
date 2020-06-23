@@ -1,11 +1,15 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
+
 import '../undo.dart';
 
 class TrackedStreamController<T> implements StreamSink<T> {
   TrackedStreamController(this._value,
       {int maxUndoStack,
       this.debounce,
+      this.onRedo,
+      this.onUndo,
       void Function() onListen,
       void Function() onPause,
       void Function() onResume,
@@ -25,6 +29,8 @@ class TrackedStreamController<T> implements StreamSink<T> {
 
   /// Debounce delay to commit changes to a group
   Duration debounce;
+
+  final ValueChanged<T> onUndo, onRedo;
 
   ChangeStack _changeStack;
   StreamController<T> _controller;
@@ -66,10 +72,20 @@ class TrackedStreamController<T> implements StreamSink<T> {
   Future close() => _controller.close();
 
   /// Undo the last change
-  void undo() => _changeStack.undo();
+  void undo() {
+    _changeStack.undo();
+    if (onUndo != null) {
+      onUndo(_value);
+    }
+  }
 
   // Redo the previous change
-  void redo() => _changeStack.redo();
+  void redo() {
+    _changeStack.redo();
+    if (onRedo != null) {
+      onRedo(_value);
+    }
+  }
 
   // Checks whether the undo/redo stack is empty
   bool get canUndo => _changeStack.canUndo;
