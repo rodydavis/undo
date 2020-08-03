@@ -1,63 +1,107 @@
-part of undo;
+import 'dart:collection';
 
-class ChangeStack extends ChangeGroupBase {
-  final _streamController = StreamController<ChangeStack>.broadcast();
-  Stream<ChangeStack> get stream => _streamController.stream.asBroadcastStream();
+class ChangeStack<T> {
+  /// Changes to keep track of
+  ChangeStack({this.limit});
 
-  Queue<Change> _undos = new ListQueue();
-  Queue<Change> _redos = new ListQueue();
+  /// Limit changes to store in the history
+  int limit;
 
-  int max;
+  final Queue<List<Change<T>>> _history = ListQueue();
+  final Queue<List<Change<T>>> _redos = ListQueue();
 
+  /// Can redo the previous change
   bool get canRedo => _redos.isNotEmpty;
-  bool get canUndo => _undos.isNotEmpty;
 
-  String get redoLabel => canRedo ? _redos.first.label : '';
-  String get undoLabel => canUndo ? _undos.last.label : '';
+  /// Can undo the previous change. If the history is equal to 1 this you cannot undo to null.
+  bool get canUndo => _history.isNotEmpty && _history.length > 1;
 
-  ChangeStack({this.max}) {
-    _streamController.add(this);
-  }
-
-  void _add(Change change, {String label}) {
+  /// Add New Change and Clear Redo Stack
+  void add(Change<T> change) {
     change.execute();
-    change.label = label;
+    _history.addLast([change]);
+    _moveForward();
+  }
 
-    _undos.addLast(change);
+  void _moveForward() {
     _redos.clear();
 
-    if (max != null && _undos.length > max) {
-      _undos.removeFirst();
+    if (limit != null && _history.length > limit + 1) {
+      _history.removeFirst();
     }
-
-    _streamController.add(this);
   }
 
-  void clear() {
-    _undos.clear();
+  /// Add New Group of Changes and Clear Redo Stack
+  void addGroup(List<Change<T>> changes) {
+    _applyChanges(changes);
+    _history.addLast(changes);
+    _moveForward();
+  }
+
+  void _applyChanges(List<Change> changes) {
+    for (final change in changes) {
+      change.execute();
+    }
+  }
+
+  /// Clear Undo History
+  @deprecated
+  void clear() => clearHistory();
+
+  /// Clear Undo History
+  void clearHistory() {
+    _history.clear();
     _redos.clear();
-    _streamController.add(null);
   }
 
+  /// Redo Previous Undo
   void redo() {
     if (canRedo) {
-      var change = _redos.removeFirst();
-      change.execute();
-      _undos.addLast(change);
-      _streamController.add(this);
+      final changes = _redos.removeFirst();
+      _applyChanges(changes);
+      _history.addLast(changes);
     }
+  }
+
+  /// Undo Last Change
+  void undo() {
+    if (canUndo) {
+      final changes = _history.removeLast();
+      for (final change in changes) {
+        change.undo();
+      }
+      _redos.addFirst(changes);
+    }
+  }
+}
+
+class Change<T> {
+  Change(
+    this._oldValue,
+    this._execute(),
+    this._undo(T oldValue), {
+    this.description,
+  });
+
+  Change.method(
+    this._execute(),
+    void Function() undo, {
+    this.description,
+  })  : _oldValue = null,
+        _undo = undo();
+
+  final String description;
+
+  final void Function() _execute;
+  final T _oldValue;
+
+  final void Function(T oldValue) _undo;
+
+  void execute() {
+    _execute();
   }
 
   void undo() {
-    if (canUndo) {
-      var change = _undos.removeLast();
-      change.undo();
-      _redos.addFirst(change);
-      _streamController.add(this);
-    }
-  }
-
-  void dispose() {
-    _streamController.close();
+    _undo(_oldValue);
   }
 }

@@ -10,23 +10,23 @@ Create an ChangeStack to store changes
 	
 	var changes = new ChangeStack();
 	
-Add new undo, redo commands using `ChangeStack.add()`. When a change is added, it calls the change's `execute()` method. Use `Change.inline()` for simple inline changes.
+Add new undo, redo commands using `ChangeStack.add()`. When a change is added, it calls the change's `execute()` method. Use `Change()` for simple inline changes.
 	
 	var count = 0;
 	
 	changes.add(
-	  new Change.inline(() => count++, () => count--);
+	  new Change(count, () => count++, (val) => count = val);
 	  name: "Increase"
 	);
 
-Use `Change.property()` when changing a field on an object. This will store the field's old value so it can be reverted.
+Use `Change()` when changing a field on an object. This will store the field's old value so it can be reverted.
 
 	var person = new Person()
 	    ..firstName = "John"
 	    ..lastName = "Doe";
 	
 	changes.add(
-	  new Change.property(
+	  new Change(
 	    person.firstName, 
 	    () => person.firstName = "Jane",
 	    (oldValue) = person.firstName = oldValue
@@ -43,43 +43,81 @@ Redo the change with `redo()`.
 
 	changes.redo();
 	print(person.firstName); // Jane
-	
-Use `group()` to wrap many changes in a transaction. Any new changes will be added to the group until `commit()` is invoked.
 
-	count = 0;
-	
-	changes.group();
-	
-	var increase = new Change.inline(() => count++, () => count--);
-	changes.add(increase);
-	changes.add(increase);
-	
-	changes.commit();
-	print(count); // 2
-	
-	changes.undo();
-	print(count); // 0
-	
-Calling `discard()` instead of `commit()` will unapply the group. This is useful for previewing changes.
+### Simple Stack Example
 
-	count = 0;
-	
-	changes.group();
-	changes.add(increase);		
-	changes.add(increase);
-	changes.discard();
-	
-	print(count); // 0
-	
-Extend `Change` to create your own changes.
+```dart
 
-	class IncreaseChange extends Change {
-	
-	  int value;
-	  
-	  IncreaseChange(this.value);
-	  
-	  void execute() => value++;
-	  void undo() => value--;
-	
-	}
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  SimpleStack _controller;
+
+  @override
+  void initState() {
+    _controller = SimpleStack<int>(
+      0,
+      onUpdate: (val) {
+        if (mounted)
+          setState(() {
+            print('New Value -> $val');
+          });
+      },
+    );
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final count = _controller.state;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Undo/Redo Example'),
+      ),
+      body: Center(
+        child: Text('Count: $count'),
+      ),
+      bottomNavigationBar: BottomAppBar(
+        child: Row(
+          children: <Widget>[
+            IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: !_controller.canUndo
+                  ? null
+                  : () {
+                      if (mounted)
+                        setState(() {
+                          _controller.undo();
+                        });
+                    },
+            ),
+            IconButton(
+              icon: Icon(Icons.arrow_forward),
+              onPressed: !_controller.canRedo
+                  ? null
+                  : () {
+                      if (mounted)
+                        setState(() {
+                          _controller.redo();
+                        });
+                    },
+            ),
+          ],
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      floatingActionButton: FloatingActionButton(
+        heroTag: ValueKey('add_button'),
+        child: Icon(Icons.add),
+        onPressed: () {
+          _controller.modify(count + 1);
+        },
+      ),
+    );
+  }
+}
+
+```
