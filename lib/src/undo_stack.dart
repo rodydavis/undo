@@ -83,13 +83,6 @@ class Change<T> {
     this.description,
   });
 
-  Change.method(
-    this._execute(),
-    void Function() undo, {
-    this.description,
-  })  : _oldValue = null,
-        _undo = undo();
-
   final String description;
 
   final void Function() _execute;
