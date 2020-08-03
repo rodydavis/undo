@@ -1,14 +1,14 @@
 import 'dart:collection';
 
-class ChangeStack<T> {
+class ChangeStack {
   /// Changes to keep track of
   ChangeStack({this.limit});
 
   /// Limit changes to store in the history
   int limit;
 
-  final Queue<List<Change<T>>> _history = ListQueue();
-  final Queue<List<Change<T>>> _redos = ListQueue();
+  final Queue<List<Change>> _history = ListQueue();
+  final Queue<List<Change>> _redos = ListQueue();
 
   /// Can redo the previous change
   bool get canRedo => _redos.isNotEmpty;
@@ -17,7 +17,7 @@ class ChangeStack<T> {
   bool get canUndo => _history.isNotEmpty && _history.length > 1;
 
   /// Add New Change and Clear Redo Stack
-  void add(Change<T> change) {
+  void add<T>(Change<T> change) {
     change.execute();
     _history.addLast([change]);
     _moveForward();
@@ -32,7 +32,7 @@ class ChangeStack<T> {
   }
 
   /// Add New Group of Changes and Clear Redo Stack
-  void addGroup(List<Change<T>> changes) {
+  void addGroup<T>(List<Change<T>> changes) {
     _applyChanges(changes);
     _history.addLast(changes);
     _moveForward();
