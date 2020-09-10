@@ -18,13 +18,13 @@ class ChangeStack {
   bool get canUndo => _history.isNotEmpty && _history.length > 1;
 
   /// Add New Change and Clear Redo Stack
-  void add<T>(Change<T> change) {
-    change.execute();
+  FutureOr<void> add<T>(Change<T> change) async {
+    await change.execute();
     _history.addLast([change]);
-    _moveForward();
+    await _moveForward();
   }
 
-  void _moveForward() {
+  FutureOr<void> _moveForward() async {
     _redos.clear();
 
     if (limit != null && _history.length > limit + 1) {
@@ -33,13 +33,13 @@ class ChangeStack {
   }
 
   /// Add New Group of Changes and Clear Redo Stack
-  void addGroup<T>(List<Change<T>> changes) {
-    _applyChanges(changes);
+  FutureOr<void> addGroup<T>(List<Change<T>> changes) async {
+    await _applyChanges(changes);
     _history.addLast(changes);
-    _moveForward();
+    await _moveForward();
   }
 
-  void _applyChanges(List<Change> changes) async {
+  FutureOr<void> _applyChanges(List<Change> changes) async {
     for (final change in changes) {
       await change.execute();
     }
@@ -56,16 +56,16 @@ class ChangeStack {
   }
 
   /// Redo Previous Undo
-  void redo() {
+  FutureOr<void> redo() async {
     if (canRedo) {
       final changes = _redos.removeFirst();
-      _applyChanges(changes);
+      await _applyChanges(changes);
       _history.addLast(changes);
     }
   }
 
   /// Undo Last Change
-  void undo() async {
+  FutureOr<void> undo() async {
     if (canUndo) {
       final changes = _history.removeLast();
       for (final change in changes) {
