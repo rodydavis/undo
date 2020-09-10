@@ -1,3 +1,7 @@
+## 1.3.0
+
+- Async support
+
 ## 1.2.0
 
 - [max] -> [limit]

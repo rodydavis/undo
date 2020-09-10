@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:collection';
 
 class ChangeStack {
@@ -38,9 +39,9 @@ class ChangeStack {
     _moveForward();
   }
 
-  void _applyChanges(List<Change> changes) {
+  void _applyChanges(List<Change> changes) async {
     for (final change in changes) {
-      change.execute();
+      await change.execute();
     }
   }
 
@@ -64,11 +65,11 @@ class ChangeStack {
   }
 
   /// Undo Last Change
-  void undo() {
+  void undo() async {
     if (canUndo) {
       final changes = _history.removeLast();
       for (final change in changes) {
-        change.undo();
+        await change.undo();
       }
       _redos.addFirst(changes);
     }
@@ -85,16 +86,16 @@ class Change<T> {
 
   final String description;
 
-  final void Function() _execute;
+  final FutureOr<void> Function() _execute;
   final T _oldValue;
 
-  final void Function(T oldValue) _undo;
+  final FutureOr<void> Function(T oldValue) _undo;
 
-  void execute() {
-    _execute();
+  FutureOr<void> execute() async {
+    await _execute();
   }
 
-  void undo() {
-    _undo(_oldValue);
+  FutureOr<void> undo() async {
+    await _undo(_oldValue);
   }
 }
