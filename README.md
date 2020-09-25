@@ -6,43 +6,53 @@ An undo redo library for Dart/Flutter. Forked from [here](https://github.com/Mix
 
 Create an ChangeStack to store changes
 
-	import 'package:undo/undo.dart';
+```dart
+import 'package:undo/undo.dart';
 	
-	var changes = new ChangeStack();
+var changes = new ChangeStack();
+```
 	
 Add new undo, redo commands using `ChangeStack.add()`. When a change is added, it calls the change's `execute()` method. Use `Change()` for simple inline changes.
 	
-	var count = 0;
+```dart
+var count = 0;
 	
-	changes.add(
-	  new Change(count, () => count++, (val) => count = val);
-	  name: "Increase"
-	);
+changes.add(
+  new Change(count, () => count++, (val) => count = val);
+  name: "Increase"
+);
+```
 
 Use `Change()` when changing a field on an object. This will store the field's old value so it can be reverted.
 
-	var person = new Person()
-	    ..firstName = "John"
-	    ..lastName = "Doe";
-	
-	changes.add(
-	  new Change(
-	    person.firstName, 
-	    () => person.firstName = "Jane",
-	    (oldValue) = person.firstName = oldValue
-	  )
-	)
+```dart
+var person = new Person()
+    ..firstName = "John"
+    ..lastName = "Doe";
+
+changes.add(
+  new Change(
+    person.firstName, 
+    () => person.firstName = "Jane",
+    (oldValue) = person.firstName = oldValue
+  )
+)
+```
 
 Undo a change with `undo()`.
 
-	print(person.firstName); // Jane
-	changes.undo();
-	print(person.firstName); // John
+```dart
+print(person.firstName); // Jane
+changes.undo();
+print(person.firstName); // John
+```
 	
 Redo the change with `redo()`.
 
-	changes.redo();
-	print(person.firstName); // Jane
+```dart
+changes.redo();
+print(person.firstName); // Jane
+```
 
 ### Simple Stack Example
 
