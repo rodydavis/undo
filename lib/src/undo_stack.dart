@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:collection';
 
 class ChangeStack {
@@ -18,13 +17,13 @@ class ChangeStack {
   bool get canUndo => _history.isNotEmpty && _history.length > 1;
 
   /// Add New Change and Clear Redo Stack
-  FutureOr<void> add<T>(Change<T> change) async {
-    await change.execute();
+  void add<T>(Change<T> change) {
+    change.execute();
     _history.addLast([change]);
-    await _moveForward();
+    _moveForward();
   }
 
-  FutureOr<void> _moveForward() async {
+  void _moveForward() {
     _redos.clear();
 
     if (limit != null && _history.length > limit + 1) {
@@ -33,15 +32,15 @@ class ChangeStack {
   }
 
   /// Add New Group of Changes and Clear Redo Stack
-  FutureOr<void> addGroup<T>(List<Change<T>> changes) async {
-    await _applyChanges(changes);
+  void addGroup<T>(List<Change<T>> changes) {
+    _applyChanges(changes);
     _history.addLast(changes);
-    await _moveForward();
+    _moveForward();
   }
 
-  FutureOr<void> _applyChanges(List<Change> changes) async {
+  void _applyChanges(List<Change> changes) {
     for (final change in changes) {
-      await change.execute();
+      change.execute();
     }
   }
 
@@ -56,20 +55,20 @@ class ChangeStack {
   }
 
   /// Redo Previous Undo
-  FutureOr<void> redo() async {
+  void redo() {
     if (canRedo) {
       final changes = _redos.removeFirst();
-      await _applyChanges(changes);
+      _applyChanges(changes);
       _history.addLast(changes);
     }
   }
 
   /// Undo Last Change
-  FutureOr<void> undo() async {
+  void undo() {
     if (canUndo) {
       final changes = _history.removeLast();
       for (final change in changes) {
-        await change.undo();
+        change.undo();
       }
       _redos.addFirst(changes);
     }
@@ -86,16 +85,16 @@ class Change<T> {
 
   final String description;
 
-  final FutureOr<void> Function() _execute;
+  final void Function() _execute;
   final T _oldValue;
 
-  final FutureOr<void> Function(T oldValue) _undo;
+  final void Function(T oldValue) _undo;
 
-  FutureOr<void> execute() async {
-    await _execute();
+  void execute() {
+    _execute();
   }
 
-  FutureOr<void> undo() async {
-    await _undo(_oldValue);
+  void undo() {
+    _undo(_oldValue);
   }
 }
