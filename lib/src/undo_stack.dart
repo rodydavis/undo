@@ -14,8 +14,8 @@ class ChangeStack {
   /// Can redo the previous change
   bool get canRedo => _redos.isNotEmpty;
 
-  /// Can undo the previous change. If the history is equal to 1 this you cannot undo to null.
-  bool get canUndo => _history.isNotEmpty && _history.length > 1;
+  /// Can undo the previous change
+  bool get canUndo => _history.isNotEmpty;
 
   /// Add New Change and Clear Redo Stack
   FutureOr<void> add<T>(Change<T> change) async {
