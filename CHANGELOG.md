@@ -1,3 +1,8 @@
+## 1.3.1
+
+- Example updated
+- Fixed first item not being able to be undone
+
 ## 1.3.0
 
 - Async support
