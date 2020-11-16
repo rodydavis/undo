@@ -1,7 +1,6 @@
 import 'package:undo/undo.dart';
 
 class SimpleStack<T> extends ChangeStack {
-
   /// Simple stack for keeping track of changes and easy callback for new state changes
   SimpleStack(
     this._state, {

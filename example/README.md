@@ -16,6 +16,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      debugShowCheckedModeBanner: false,
       home: HomeScreen(),
     );
   }
@@ -27,10 +29,25 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int count = 0;
-  var changes = ChangeStack();
+  SimpleStack _controller;
+
+  @override
+  void initState() {
+    _controller = SimpleStack<int>(
+      0,
+      onUpdate: (val) {
+        if (mounted)
+          setState(() {
+            print('New Value -> $val');
+          });
+      },
+    );
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final count = _controller.state;
     return Scaffold(
       appBar: AppBar(
         title: Text('Undo/Redo Example'),
@@ -43,23 +60,23 @@ class _HomeScreenState extends State<HomeScreen> {
           children: <Widget>[
             IconButton(
               icon: Icon(Icons.arrow_back),
-              onPressed: !changes.canUndo
+              onPressed: !_controller.canUndo
                   ? null
                   : () {
                       if (mounted)
                         setState(() {
-                          changes.undo();
+                          _controller.undo();
                         });
                     },
             ),
             IconButton(
               icon: Icon(Icons.arrow_forward),
-              onPressed: !changes.canRedo
+              onPressed: !_controller.canRedo
                   ? null
                   : () {
                       if (mounted)
                         setState(() {
-                          changes.redo();
+                          _controller.redo();
                         });
                     },
             ),
@@ -71,15 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
         heroTag: ValueKey('add_button'),
         child: Icon(Icons.add),
         onPressed: () {
-          if (mounted)
-            setState(() {
-              var increase = new Change.inline(
-                () => count++,
-                () => count--,
-              );
-              changes.add(increase);
-              changes.commit();
-            });
+          _controller.modify(count + 1);
         },
       ),
     );
