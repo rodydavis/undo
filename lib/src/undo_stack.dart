@@ -5,7 +5,7 @@ class ChangeStack {
   ChangeStack({this.limit});
 
   /// Limit changes to store in the history
-  int limit;
+  int? limit;
 
   final Queue<List<Change>> _history = ListQueue();
   final Queue<List<Change>> _redos = ListQueue();
@@ -26,7 +26,7 @@ class ChangeStack {
   void _moveForward() {
     _redos.clear();
 
-    if (limit != null && _history.length > limit + 1) {
+    if (limit != null && _history.length > limit! + 1) {
       _history.removeFirst();
     }
   }
@@ -80,7 +80,7 @@ class Change<T> {
     this._oldValue,
     this._execute(),
     this._undo(T oldValue), {
-    this.description,
+    this.description = '',
   });
 
   final String description;

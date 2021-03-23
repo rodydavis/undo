@@ -24,7 +24,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  TrackedStreamController<int> _controller = TrackedStreamController(0);
+  final _controller = TrackedStreamController(0);
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
             heroTag: ValueKey('add_button'),
             child: Icon(Icons.add),
             onPressed: () {
-              _controller.add(count + 1);
+              _controller.add(count! + 1);
             },
           ),
         );
@@ -82,12 +82,12 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class TrackedStreamController<T> implements StreamController<T> {
-  SimpleStack<T> _simpleStack;
-  StreamController<T> _streamController;
+  late SimpleStack<T> _simpleStack;
+  late StreamController<T> _streamController;
 
   TrackedStreamController(
     T value, {
-    int limit,
+    int? limit,
     this.onCancel,
     this.onListen,
     this.onPause,
@@ -115,24 +115,24 @@ class TrackedStreamController<T> implements StreamController<T> {
   void undo() => _simpleStack.undo();
 
   @override
-  FutureOr<void> Function() onCancel;
+  FutureOr<void> Function()? onCancel;
 
   @override
-  void Function() onListen;
+  void Function()? onListen;
 
   @override
-  void Function() onPause;
+  void Function()? onPause;
 
   @override
-  void Function() onResume;
+  void Function()? onResume;
 
   @override
-  void addError(Object error, [StackTrace stackTrace]) {
+  void addError(Object error, [StackTrace? stackTrace]) {
     _streamController.addError(error, stackTrace);
   }
 
   @override
-  Future addStream(Stream<T> source, {bool cancelOnError}) {
+  Future<void> addStream(Stream<T> source, {bool? cancelOnError}) async {
     _streamController.addStream(source, cancelOnError: cancelOnError);
   }
 

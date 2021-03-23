@@ -33,6 +33,7 @@ void main() {
         await Future<void>.delayed(
             Duration.zero, () => testObject.modify(testObject.state + 1));
         await Future<void>.delayed(Duration.zero, testObject.undo);
+
         expect(testObject.canUndo, isFalse);
       });
     });
@@ -78,7 +79,7 @@ void main() {
         final testObject = SimpleStack(0, onUpdate: states.add);
         await Future<void>.delayed(Duration.zero, testObject.undo);
 
-        expect(states, [0]);
+        expect(states, [0, 0]);
       });
 
       test('does nothing when limit is 0', () async {
@@ -88,7 +89,7 @@ void main() {
             Duration.zero, () => testObject.modify(testObject.state + 1));
         await Future<void>.delayed(Duration.zero, testObject.undo);
 
-        expect(states, [0, 1]);
+        expect(states, [0, 1, 0]);
       });
 
       test('loses history outside of limit', () async {
@@ -101,7 +102,7 @@ void main() {
         await Future<void>.delayed(Duration.zero, testObject.undo);
         await Future<void>.delayed(Duration.zero, testObject.undo);
 
-        expect(states, [0, 1, 2, 1]);
+        expect(states, [0, 1, 2, 1, 0]);
       });
 
       test('reverts to initial state', () async {
