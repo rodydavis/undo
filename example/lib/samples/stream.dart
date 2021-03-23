@@ -94,14 +94,14 @@ class TrackedStreamController<T> implements StreamController<T> {
     this.onResume,
     bool sync = false,
   }) {
-    _streamController = StreamController<T>(
+    _streamController = StreamController(
       onCancel: onCancel,
       onListen: onListen,
       onPause: onPause,
       onResume: onResume,
       sync: sync,
     );
-    _simpleStack = SimpleStack<T>(value, limit: limit, onUpdate: (newVal) {
+    _simpleStack = SimpleStack(value, limit: limit, onUpdate: (newVal) {
       _streamController.add(newVal);
     });
   }

@@ -8,7 +8,9 @@ void main() {
     group('initial state', () {
       test('is correct', () {
         final states = <int>[];
-        expect(SimpleStack(0, onUpdate: states.add).state, 0);
+        final testObject = SimpleStack(0, onUpdate: states.add);
+
+        expect(testObject.state, 0);
       });
     });
 
@@ -16,6 +18,7 @@ void main() {
       test('is false when no state changes have occurred', () async {
         final states = <int>[];
         final testObject = SimpleStack(0, onUpdate: states.add);
+
         expect(testObject.canUndo, isFalse);
       });
 
@@ -79,7 +82,7 @@ void main() {
         final testObject = SimpleStack(0, onUpdate: states.add);
         await Future<void>.delayed(Duration.zero, testObject.undo);
 
-        expect(states, [0, 0]);
+        expect(states, [0]);
       });
 
       test('does nothing when limit is 0', () async {

@@ -7,7 +7,10 @@ class SimpleStack<T> extends ChangeStack {
     this.limit,
     this.onUpdate,
   }) : super(limit: limit) {
-    modify(_state);
+    // modify(_state);
+    if (onUpdate != null) {
+      onUpdate!(_state);
+    }
   }
 
   /// Limit of changes to keep in history

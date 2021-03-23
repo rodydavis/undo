@@ -68,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
           heroTag: ValueKey('add_button'),
           child: Icon(Icons.add),
           onPressed: () {
-            _controller.value = count + 1;
+            _controller.value++;
           },
         ),
       ),
@@ -80,18 +80,14 @@ class TrackedValueNotifier<T> extends ValueNotifier<T> {
   late SimpleStack<T> _simpleStack;
 
   TrackedValueNotifier(T val, {int? limit}) : super(val) {
-    _simpleStack = SimpleStack<T>(val, limit: limit, onUpdate: (newVal) {
-      value = newVal;
+    _simpleStack = SimpleStack(val, limit: limit, onUpdate: (newVal) {
+      super.value = newVal;
       notifyListeners();
     });
   }
 
   @override
-  // ignore: avoid_return_types_on_setters
-  void set value(T newValue) {
-    _simpleStack.modify(newValue);
-    super.value = newValue;
-  }
+  set value(T newValue) => _simpleStack.modify(newValue);
 
   bool get canUndo => _simpleStack.canUndo;
   bool get canRedo => _simpleStack.canRedo;
