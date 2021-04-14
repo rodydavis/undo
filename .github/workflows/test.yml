@@ -17,4 +17,4 @@ jobs:
       - name: Install
         run: flutter pub get
       - name: Test
-        run: cd example && flutter test
+        run: flutter test
