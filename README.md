@@ -3,6 +3,7 @@
 [![Buy Me A Coffee](https://img.shields.io/badge/Donate-Buy%20Me%20A%20Coffee-yellow.svg)](https://www.buymeacoffee.com/rodydavis)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=WSH3GVC49GNNJ)
 ![github pages](https://github.com/rodydavis/undo/workflows/github%20pages/badge.svg)
+![tests](https://github.com/rodydavis/undo/workflows/test/badge.svg)
 [![GitHub stars](https://img.shields.io/github/stars/rodydavis/undo?color=blue)](https://github.com/rodydavis/undo)
 [![undo](https://img.shields.io/pub/v/undo.svg)](https://pub.dev/packages/undo)
 
