@@ -4,11 +4,11 @@ import 'package:test/test.dart';
 import 'package:undo/undo.dart';
 
 void main() {
-  group('Test Undo/Redo Object Modifications', () {
     group('initial state', () {
       test('is correct', () {
         final states = <int>[];
-        expect(SimpleStack(0, onUpdate: states.add).state, 0);
+        final testObject = SimpleStack(0, onUpdate: states.add);
+        expect(testObject.state, 0);
       });
     });
 
@@ -16,6 +16,7 @@ void main() {
       test('is false when no state changes have occurred', () async {
         final states = <int>[];
         final testObject = SimpleStack(0, onUpdate: states.add);
+
         expect(testObject.canUndo, isFalse);
       });
 
@@ -33,6 +34,7 @@ void main() {
         await Future<void>.delayed(
             Duration.zero, () => testObject.modify(testObject.state + 1));
         await Future<void>.delayed(Duration.zero, testObject.undo);
+
         expect(testObject.canUndo, isFalse);
       });
     });
@@ -88,7 +90,7 @@ void main() {
             Duration.zero, () => testObject.modify(testObject.state + 1));
         await Future<void>.delayed(Duration.zero, testObject.undo);
 
-        expect(states, [0, 1]);
+        expect(states, [0, 1, 0]);
       });
 
       test('loses history outside of limit', () async {
@@ -101,7 +103,7 @@ void main() {
         await Future<void>.delayed(Duration.zero, testObject.undo);
         await Future<void>.delayed(Duration.zero, testObject.undo);
 
-        expect(states, [0, 1, 2, 1]);
+        expect(states, [0, 1, 2, 1, 0]);
       });
 
       test('reverts to initial state', () async {
@@ -192,5 +194,4 @@ void main() {
         expect(states, [0, 1, 2, 1, 0]);
       });
     });
-  });
 }
