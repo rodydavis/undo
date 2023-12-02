@@ -16,7 +16,7 @@ Create an ChangeStack to store changes
 ```dart
 import 'package:undo/undo.dart';
 	
-var changes = new ChangeStack();
+var changes = ChangeStack();
 ```
 	
 Add new undo, redo commands using `ChangeStack.add()`. When a change is added, it calls the change's `execute()` method. Use `Change()` for simple inline changes.
@@ -25,7 +25,7 @@ Add new undo, redo commands using `ChangeStack.add()`. When a change is added, i
 var count = 0;
 	
 changes.add(
-  new Change(count, () => count++, (val) => count = val);
+  Change(count, () => count++, (val) => count = val);
   name: "Increase"
 );
 ```
@@ -38,7 +38,7 @@ var person = new Person()
     ..lastName = "Doe";
 
 changes.add(
-  new Change(
+  Change(
     person.firstName, 
     () => person.firstName = "Jane",
     (oldValue) = person.firstName = oldValue

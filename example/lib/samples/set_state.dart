@@ -22,7 +22,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  SimpleStack _controller;
+  late SimpleStack _controller;
 
   @override
   void initState() {

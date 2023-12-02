@@ -77,9 +77,9 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class TrackedValueNotifier<T> extends ValueNotifier<T> {
-  SimpleStack<T> _simpleStack;
+  late SimpleStack<T> _simpleStack;
 
-  TrackedValueNotifier(T val, {int limit}) : super(val) {
+  TrackedValueNotifier(T val, {int? limit}) : super(val) {
     _simpleStack = SimpleStack<T>(val, limit: limit, onUpdate: (newVal) {
       value = newVal;
       notifyListeners();

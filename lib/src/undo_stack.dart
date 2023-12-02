@@ -1,5 +1,7 @@
 import 'dart:collection';
 
+import 'change.dart';
+
 class ChangeStack {
   /// Changes to keep track of
   ChangeStack({this.limit});
@@ -10,6 +12,12 @@ class ChangeStack {
   final Queue<List<Change>> _history = ListQueue();
   final Queue<List<Change>> _redos = ListQueue();
 
+  /// List of changes in the history
+  List<Change> get history => _history.last;
+
+  /// List of changes in the redo stack
+  List<Change> get redos => _redos.first;
+
   /// Can redo the previous change
   bool get canRedo => _redos.isNotEmpty;
 
@@ -18,9 +26,13 @@ class ChangeStack {
 
   /// Add New Change and Clear Redo Stack
   void add<T>(Change<T> change) {
-    change.execute();
-    _history.addLast([change]);
-    _moveForward();
+    try {
+      change.execute();
+      _history.addLast([change]);
+      _moveForward();
+    } catch (e) {
+      rethrow;
+    }
   }
 
   void _moveForward() {
@@ -33,9 +45,13 @@ class ChangeStack {
 
   /// Add New Group of Changes and Clear Redo Stack
   void addGroup<T>(List<Change<T>> changes) {
-    _applyChanges(changes);
-    _history.addLast(changes);
-    _moveForward();
+    try {
+      _applyChanges(changes);
+      _history.addLast(changes);
+      _moveForward();
+    } catch (e) {
+      rethrow;
+    }
   }
 
   void _applyChanges(List<Change> changes) {
@@ -72,29 +88,5 @@ class ChangeStack {
       }
       _redos.addFirst(changes);
     }
-  }
-}
-
-class Change<T> {
-  Change(
-    this._oldValue,
-    this._execute(),
-    this._undo(T oldValue), {
-    this.description = '',
-  });
-
-  final String description;
-
-  final void Function() _execute;
-  final T _oldValue;
-
-  final void Function(T oldValue) _undo;
-
-  void execute() {
-    _execute();
-  }
-
-  void undo() {
-    _undo(_oldValue);
   }
 }

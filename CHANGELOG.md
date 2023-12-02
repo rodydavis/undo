@@ -1,3 +1,8 @@
+## 1.5.0
+
+- Updating to Dart 3.0.0
+- Removing unnecessary `packageVersion`
+
 ## 1.4.0
 
 * Null safety

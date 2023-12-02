@@ -24,14 +24,17 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  TrackedStreamController<int> _controller = TrackedStreamController(0);
+  late TrackedStreamController<int> _controller = TrackedStreamController(
+    0,
+  );
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<int>(
+      initialData: 0,
       stream: _controller.stream,
       builder: (context, snapshot) {
-        final count = snapshot.data;
+        final count = snapshot.data!;
         return Scaffold(
           appBar: AppBar(
             title: Text('Undo/Redo Example'),
@@ -82,12 +85,12 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class TrackedStreamController<T> implements StreamController<T> {
-  SimpleStack<T> _simpleStack;
-  StreamController<T> _streamController;
+  late SimpleStack<T> _simpleStack;
+  late StreamController<T> _streamController;
 
   TrackedStreamController(
     T value, {
-    int limit,
+    int? limit,
     this.onCancel,
     this.onListen,
     this.onPause,
@@ -115,25 +118,25 @@ class TrackedStreamController<T> implements StreamController<T> {
   void undo() => _simpleStack.undo();
 
   @override
-  FutureOr<void> Function() onCancel;
+  final FutureOr<void> Function()? onCancel;
 
   @override
-  void Function() onListen;
+  final void Function()? onListen;
 
   @override
-  void Function() onPause;
+  final void Function()? onPause;
 
   @override
-  void Function() onResume;
+  final void Function()? onResume;
 
   @override
-  void addError(Object error, [StackTrace stackTrace]) {
+  void addError(Object error, [StackTrace? stackTrace]) {
     _streamController.addError(error, stackTrace);
   }
 
   @override
-  Future addStream(Stream<T> source, {bool cancelOnError}) {
-    _streamController.addStream(source, cancelOnError: cancelOnError);
+  Future addStream(Stream<T> source, {bool? cancelOnError}) {
+    return _streamController.addStream(source, cancelOnError: cancelOnError);
   }
 
   @override
@@ -153,4 +156,24 @@ class TrackedStreamController<T> implements StreamController<T> {
 
   @override
   Future close() => _streamController.close();
+
+  @override
+  set onCancel(FutureOr<void> Function()? _onCancel) {
+    onCancel = _onCancel!;
+  }
+
+  @override
+  set onListen(void Function()? _onListen) {
+    onListen = _onListen!;
+  }
+
+  @override
+  set onPause(void Function()? _onPause) {
+    onPause = _onPause!;
+  }
+
+  @override
+  set onResume(void Function()? _onResume) {
+    onResume = _onResume!;
+  }
 }
