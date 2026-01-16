@@ -9,6 +9,9 @@
 
 An undo redo library for Dart/Flutter. Forked from [here](https://github.com/Mixbook/undo.dart) and updated for Flutter. Demo can be viewed [here](https://rodydavis.github.io/undo/).
 
+> [!WARNING]
+> This project has moved here: https://github.com/rodydavis/packages.dart
+
 ## Usage
 
 Create an ChangeStack to store changes
